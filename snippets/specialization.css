@@ -1,0 +1,9 @@
+.markdown-source-view {
+    max-width: 90%;
+    margin: 0 auto;
+}
+
+body {
+	/* --file-line-width: 55rem;  # default is 45rem */
+    --file-line-width: 60rem; 
+}

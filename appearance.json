@@ -1,3 +1,6 @@
 {
-  "cssTheme": "Solarized"
+  "cssTheme": "Solarized",
+  "enabledCssSnippets": [
+    "specialization"
+  ]
 }
