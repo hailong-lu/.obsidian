@@ -5,6 +5,6 @@
   "showWeeklyNote": true,
   "weeklyNoteFormat": "YYYY-MM-[W]WW",
   "weeklyNoteTemplate": "",
-  "weeklyNoteFolder": "WorkNotes",
+  "weeklyNoteFolder": "Schedule",
   "localeOverride": "system-default"
 }

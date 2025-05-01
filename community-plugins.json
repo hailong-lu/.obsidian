@@ -2,7 +2,6 @@
   "table-editor-obsidian",
   "obsidian-tasks-plugin",
   "obsidian-linter",
-  "obsidian-annotator",
   "obsidian-checklist-plugin",
   "drawio-obsidian",
   "obsidian-markmind",
@@ -21,5 +20,7 @@
   "image-converter",
   "note-refactor-obsidian",
   "obsidian-git",
-  "quick-latex"
+  "quick-latex",
+  "obsidian-epub-plugin",
+  "obsidian-annotator"
 ]
