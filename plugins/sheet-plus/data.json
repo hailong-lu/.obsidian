@@ -1,12 +1,21 @@
 {
   "showSheetButton": "true",
   "folder": "/",
+  "fileLocationMode": "specified",
+  "fileSubFolder": "",
   "excelFilenamePrefix": "Sheet-",
   "excelFilenameDateTime": "",
   "sheetHeight": "50",
+  "sheetHeightMode": "auto",
   "rowHeight": "25",
   "colWidth": "100",
   "authorizationCode": "",
   "embedLinkShowFooter": "false",
-  "mobileRenderMode": "mobile"
+  "embedLinkOpenMode": "split-right",
+  "numberFormatLocal": "en",
+  "mobileRenderMode": "mobile",
+  "darkModal": "light",
+  "isBigSheet": "false",
+  "fontFolder": "",
+  "selectedFontName": ""
 }

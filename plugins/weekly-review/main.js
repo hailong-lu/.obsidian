@@ -36,42 +36,36 @@ var DEFAULT_SETTINGS = {
 };
 var WeeklyReview = class extends import_obsidian.Plugin {
   async startReview(lookbackInDays, mode, location) {
-    const files = this.app.vault.getMarkdownFiles();
-    const start = window.moment(window.moment().startOf("day")).subtract(lookbackInDays, "days");
-    const recentFiles = files.filter((f) => start.isBefore(window.moment(f.stat[mode]))).sort((a, b) => (b == null ? void 0 : b.stat[mode]) - (a == null ? void 0 : a.stat[mode]));
+    const days = Number.isFinite(lookbackInDays) && lookbackInDays >= 1 ? Math.floor(lookbackInDays) : DEFAULT_SETTINGS.daysAgo;
+    const start = window.moment().startOf("day").subtract(days, "days");
+    const recentFiles = this.app.vault.getMarkdownFiles().filter((f) => start.isBefore(window.moment(f.stat[mode]))).sort((a, b) => b.stat[mode] - a.stat[mode]);
     const modeString = mode === "ctime" /* CTime */ ? "created" : "modified";
-    new import_obsidian.Notice(`Opening ${recentFiles.length} files ${modeString} in the last ${lookbackInDays} days.`);
-    let index = 0;
-    let split = null;
-    if (location === "split" /* Split */) {
-      split = await this.app.workspace.getLeaf("split");
+    new import_obsidian.Notice(`Opening ${recentFiles.length} files ${modeString} in the last ${days} days.`);
+    const splitLeaf = location === "split" /* Split */ ? this.app.workspace.getLeaf("split") : null;
+    if (splitLeaf) {
+      this.app.workspace.setActiveLeaf(splitLeaf, { focus: false });
     }
-    console.log("Opening a tab group");
-    await recentFiles.forEach(async (f) => {
-      await setTimeout(async () => {
-        console.log(`Opening ${f.path}`, split, location);
-        if (index === 0 && split) {
-          await this.openFile(split, f);
-        } else {
-          await this.openFile(null, f);
-        }
-        index++;
-      });
-    });
-    this.settings.lastReview = /* @__PURE__ */ new Date();
+    let failures = 0;
+    for (let i = 0; i < recentFiles.length; i++) {
+      const file = this.app.vault.getAbstractFileByPath(recentFiles[i].path);
+      if (!(file instanceof import_obsidian.TFile))
+        continue;
+      try {
+        const leaf = i === 0 && splitLeaf ? splitLeaf : this.app.workspace.getLeaf("tab");
+        await leaf.openFile(file, { active: false });
+      } catch (e) {
+        failures++;
+        console.error(`Weekly Review: failed to open ${file.path}`, e);
+      }
+    }
+    if (splitLeaf) {
+      this.app.workspace.setActiveLeaf(splitLeaf, { focus: true });
+    }
+    if (failures) {
+      new import_obsidian.Notice(`Weekly Review: ${failures} file(s) could not be opened.`);
+    }
+    this.settings.lastReview = (/* @__PURE__ */ new Date()).toISOString();
     await this.saveSettings();
-    console.log("Weekly Review Done!");
-  }
-  async openFile(existingLeaf, file) {
-    let leaf = existingLeaf;
-    if (!leaf) {
-      leaf = await this.app.workspace.getLeaf("tab");
-    }
-    const r = await leaf.openFile(file, { active: false });
-    if (existingLeaf) {
-      await this.app.workspace.setActiveLeaf(leaf);
-    }
-    return r;
   }
   async onload() {
     await this.loadSettings();
@@ -100,9 +94,13 @@ var WeeklyReviewSettingTab = class extends import_obsidian.PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
     containerEl.createEl("h2", { text: "Settings for Weekly Review" });
-    containerEl.createEl("h3", { text: "Last Review was on: " + window.moment(this.plugin.settings.lastReview).format("MMMM Do, YYYY h:mma") || "Never" });
+    const lastReview = this.plugin.settings.lastReview;
+    containerEl.createEl("h3", { text: lastReview ? "Last Review was on: " + window.moment(lastReview).format("MMMM Do, YYYY h:mma") : "Last Review was on: Never" });
     new import_obsidian.Setting(containerEl).setName("How many days to show?").setDesc("Typically this is 7").addText((text) => text.setPlaceholder("Days").setValue(this.plugin.settings.daysAgo.toString()).onChange(async (value) => {
-      this.plugin.settings.daysAgo = parseInt(value);
+      const parsed = parseInt(value, 10);
+      if (!Number.isFinite(parsed) || parsed < 1)
+        return;
+      this.plugin.settings.daysAgo = parsed;
       await this.plugin.saveSettings();
     }));
     new import_obsidian.Setting(containerEl).setName("Mode").setDesc("Would you like the plugin to return only newly created files or all files that have been recently modified?").addDropdown((dropdown) => {
@@ -125,6 +123,5 @@ var WeeklyReviewSettingTab = class extends import_obsidian.PluginSettingTab {
     });
   }
 };
-
 
 /* nosourcemap */

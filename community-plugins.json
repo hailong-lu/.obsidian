@@ -23,5 +23,20 @@
   "obsidian-epub-plugin",
   "obsidian-annotator",
   "homepage",
-  "obsidian-day-planner"
+  "obsidian-day-planner",
+  "advanced-canvas",
+  "card-board",
+  "dataview",
+  "editing-toolbar",
+  "obsidian-excalidraw-plugin",
+  "obsidian-image-toolkit",
+  "make-md",
+  "obsidian-outliner",
+  "quick-explorer",
+  "quick-latex",
+  "obsidian-plantuml",
+  "task-board",
+  "templater-obsidian",
+  "obsidian-tikzjax",
+  "weekly-review"
 ]
